@@ -1,0 +1,459 @@
+package ArbolHotel;
+
+public class Node {
+    Node right;
+    Node left;
+    Object e;
+    public Node(Object _e) {
+        right = left = null;
+        this.e = _e;
+    }
+}
+public interface ITree {
+    public void push(int e);
+    public void pushO(Object e,int n);
+    public boolean search(Object e);
+    public void deleted(Object e);
+    public void preOrder(Node node);
+    public void auxPreOrder();
+    public void inOrder(Node node);
+    public void auxInOrder();
+    public void postOrder(Node node);
+    public void auxPostOrder();
+    public int altura();
+    public int NNodos();
+}
+
+public class Tree implements ITree {
+    Node root;
+    public Tree(){
+        root=null;
+    }
+    private Node auxPush(int e, Node raiz){
+        if(raiz==null)
+            return new Node(e);
+        else if(e>(int)raiz.e)
+            raiz.right=auxPush(e,raiz.right);
+        else if(e<(int)raiz.e)
+            raiz.left=auxPush(e,raiz.left);
+
+        return raiz;
+    }
+
+    private Node auxPush1(Object e, Node raiz,int n){
+        if(raiz==null)
+            return new Node(e);
+        else if(n>50)
+            raiz.right=auxPush1(e,raiz.right,n);
+        else if(n<50)
+            raiz.left=auxPush1(e,raiz.left,n);
+
+        return raiz;
+    }
+
+    @Override
+    public void push(int e) {
+        this.root=auxPush(e,root);
+
+    }
+
+    @Override
+    public void pushO(Object e,int n) {
+    this.root=auxPush1(e,root,n);
+    }
+
+    @Override
+    public boolean search(Object e) {
+        return search(e,root);
+    }
+    private boolean search(Object e, Node raiz){
+        if(raiz==null)
+            return false;
+        else if(raiz.e.equals(e))
+            return true;
+        else if((int)e<(int)raiz.e)
+            return  search(e,raiz.left);
+        else if((int)e>(int)raiz.e)
+            return search(e,raiz.right);
+
+        return false;
+    }
+
+    @Override
+    public void deleted(Object e) {
+        root=delete1(e,root);
+    }
+    public Node delete1(Object e, Node raiz){
+        if(raiz==null)
+            return null;
+        else if((int)e>(int)raiz.e)
+            raiz.right=delete1(e,raiz.right);
+        else if((int)e<(int)raiz.e)
+            raiz.left=delete1(e,raiz.left);
+        else{
+            if(raiz.left!=null && raiz.right!=null){
+
+                Node temp=raiz;
+                Node auxiliar=minimo(temp.right);
+                raiz.e=auxiliar.e;
+                delete1(auxiliar.e,raiz.right);
+            }
+            else if(raiz.left!=null)
+                raiz=raiz.left;
+            else if(raiz.right!=null)
+                raiz=raiz.right;
+            else  raiz=null;
+        }
+        return raiz;
+    }
+    private Node minimo(Node raiz){
+        if(raiz.left==null)return raiz;
+        else return minimo(raiz.left);
+    }
+
+    @Override
+    public void preOrder(Node node) {
+        if(node!=null){
+            System.out.print(node.e+" ");
+            preOrder(node.left);
+            preOrder(node.right);
+        }
+    }
+    @Override
+    public void auxPreOrder(){
+        preOrder(root);
+    }
+
+    @Override
+    public void inOrder(Node node) {
+        if(node !=null){
+            inOrder(node.left);
+            System.out.print(node.e +" ");
+            inOrder(node.right);
+        }
+    }
+    @Override
+    public void auxInOrder(){
+        inOrder(root);
+    }
+
+    @Override
+    public void postOrder(Node node) {
+        //DIR
+        if(node!=null){
+            postOrder(node.right);
+            postOrder(node.left);
+            System.out.print(node.e+" ");
+        }
+    }
+    @Override
+    public void auxPostOrder(){
+        postOrder(root);
+    }
+
+    private int auxAltura(Node raiz){
+        int tempDerecho=0, tempIzquierdo=0;
+        if (raiz!=null) {
+            if (raiz.right != null)
+                tempDerecho = auxAltura(raiz.right);
+            else if (raiz.left != null)
+                tempIzquierdo = auxAltura(raiz.left);
+            if (tempDerecho < tempIzquierdo) return tempIzquierdo+1;
+            else return tempDerecho+1;
+        }
+        return 0;
+    }
+    @Override
+    public int altura(){
+        return auxAltura(root);
+    }
+    private int auxNNodos(Node raiz){
+        int tempnum=0;
+        if (raiz!=null){
+            tempnum++;
+            tempnum += auxNNodos(raiz.left);
+            tempnum += auxNNodos(raiz.right);
+            return tempnum;
+        }
+        return tempnum;
+    }
+    @Override
+    public int NNodos(){
+        return auxNNodos(root);
+    }
+}
+package LinkedList;
+
+public class Node {
+    Object e;
+    public Node next;
+    public Node(Object _e){
+        this.e=_e;
+        next=null;
+    }
+    public Node(){}
+}
+public interface ILinkedList {
+    public void printList();
+    public boolean isEmpty();
+    public void push(Object _e);
+    public void pushAfterNode(Object _e, Node prevNode);
+    public void insertFinal(Object _e);
+    public void deleteNode(Object key);
+    public void deleteNode2(int position);
+    public int lengthList();
+    public boolean search(Object _e);
+    public void destroyList();
+}
+public class LinkedList implements ILinkedList {
+    public Node head;
+    @Override
+    public void printList(){
+        Node aux = head;
+        while (aux != null) {
+            System.out.println(aux.e);
+            aux = aux.next;
+        }
+    }
+    @Override
+    public boolean isEmpty(){
+        return head == null;
+    }
+    @Override
+    public void push(Object _e){
+        Node node = new Node(_e);
+        node.next = head;
+        head = node;
+    }
+    @Override
+    public void pushAfterNode(Object _e, Node prevNode){
+        if(!isEmpty()){
+            Node newNode = new Node(_e);
+            newNode.next = prevNode.next;
+            prevNode.next = newNode;
+        }
+        else System.out.println("El nodo anterior no existe");
+    }
+    @Override
+    public void insertFinal(Object _e){
+        if (!isEmpty()) {
+            Node newNode = new Node(_e);
+            newNode.next = null;
+            Node prev = head;
+            while(prev.next != null){
+                prev = prev.next;
+                prev.next = newNode;
+            }
+        }
+        else head = new Node(_e);
+    }
+    @Override
+    public void deleteNode(Object key){
+        if(!isEmpty()){
+            if(head.e.equals(key)){
+                head = head.next;
+            }
+            else {
+                Node temp = head, prev = null;
+                while(temp != null && !temp.e.equals(key)){
+                    prev = temp;
+                    temp = temp.next;
+                }
+                if(temp != null) prev.next = temp.next;
+                else System.out.println("Elemento no encontrado");
+            }
+        }else System.out.println("Lista vacía");
+    }
+    @Override
+    public void deleteNode2(int position) {
+        if(!isEmpty()) {
+            if(position == 0) head = head.next;
+            else {
+                Node temp = head;
+                for(int i = 0; temp != null && i < position -1; i++)
+                    temp = temp.next;
+                if(temp != null && temp.next != null) {
+                    Node next = temp.next.next;
+                    temp.next = next;
+                }else System.out.println("Índice no encotrado");
+            }
+        }else System.out.println("Lista vacía");
+    }
+    @Override
+    public int lengthList() {
+        Node aux = head;
+        int n = 0;
+        while(aux != null) {
+            n++;
+            aux = aux.next;
+        }
+        return n;
+    }
+    @Override
+    public boolean search(Object _e) {
+        Node tem = head;
+        while(tem != null) {
+            if(tem.e.equals(_e))
+                return true;
+            tem = tem.next;
+        }
+        return false;
+    }
+    @Override
+    public void destroyList() {
+        head = null;
+    }
+}
+import ListaHotel.LinkedList.*;
+import TDAHotel.*;
+import java.util.Scanner;
+public class Lista {
+    public Lista(){
+
+    }
+    public Object DesLista(){
+        EstadoDelCuarto data=new EstadoDelCuarto();
+        Scanner sc = new Scanner(System.in);
+        int op;
+        LinkedList list = new LinkedList();
+        list.head = new Node(1+data.Limpio());
+        Node otro1 = new Node(2+data.Limpio());
+        Node otro2 = new Node(3+data.Limpio());
+        Node otro3 = new Node(4+data.Limpio());
+        Node otro4 = new Node(5+data.Limpio());
+        Node otro5 = new Node(6+data.Limpio());
+        Node otro6 = new Node(7+data.Limpio());
+        Node otro7 = new Node(8+data.Limpio());
+        Node otro8 = new Node(9+data.Limpio());
+        Node otro9 = new Node(10+data.Limpio());
+        Node aux = new Node("");
+        list.head.next = otro1; // enlazamos la cabecera de un nodo
+        otro1.next = otro2; //un nodo a otro nodo
+        otro2.next = otro3;
+        otro3.next = otro4;
+        otro4.next = otro5;
+        otro5.next = otro6;
+        otro6.next = otro7;
+        otro7.next = otro8;
+        otro8.next = otro9;
+        otro9.next = aux;
+       // System.out.println("Hotel La Nueva Luz de Mayo");
+        //  list.printList();
+        do {
+            list.printList();
+            System.out.println("ingrese un valor");
+            System.out.println("1.Reservar cuarto \n2.Rentar cuarto \n3.Limpiar cuarto");
+            System.out.println("0.-Salir del programa");
+
+            op = sc.nextInt();
+            switch (op) {
+                case 1:
+                    System.out.println("ingresa el numero de cuarto");
+                    int a = sc.nextInt(10);
+                    list.deleteNode(a+data.Limpio());
+                    list.pushAfterNode(a +data.Reservar(), aux);
+                    break;
+                case 2:
+                    System.out.println("ingresa el numero de cuarto");
+                    int b = sc.nextInt(10);
+                    list.deleteNode(b);
+                    list.pushAfterNode(b +data.Rentar(), aux);
+                    break;
+                case 3:
+                    System.out.println("ingresa el numero de cuarto");
+                    int c = sc.nextInt();
+                    list.deleteNode(c +data.Reservar());
+                    list.deleteNode(c +data.Rentar());
+                    list.pushAfterNode(c+data.Limpio(), aux);
+                    break;
+            }
+        } while (op != 0);
+        //   list.delete2(3);
+        //list.PrintList();
+        //list.delete("7");
+        java.awt.Toolkit.getDefaultToolkit().beep();
+        return "";
+    }
+
+}
+package TDAHotel;
+
+public class EstadoDelCuarto {
+
+        private String EstadoDelCuarto;
+        public EstadoDelCuarto(){
+            EstadoDelCuarto=" Libre";
+        }
+        public void setEstadoDelCuarto(String dato){
+            EstadoDelCuarto=dato;
+        }
+        public String getEstadoDelCuarto(){
+            return EstadoDelCuarto;
+        }
+        public String Limpio(){
+            EstadoDelCuarto=" Libre";
+            return EstadoDelCuarto;
+        }
+        public String Reservar(){
+            EstadoDelCuarto=" Reservado";
+            return EstadoDelCuarto;
+        }
+        public String Rentar(){
+            EstadoDelCuarto=" Rentado";
+            return EstadoDelCuarto;
+        }
+    }
+
+package Principal;
+import ArbolHotel.*;
+import ListaHotel.Lista.*;
+import java.util.Random;
+import java.util.Scanner;
+
+
+public class Principal {
+    public static void main(String[] args) {
+        Random r=new Random();
+        Scanner sc=new Scanner(System.in);
+        int op;
+        Lista obj=new Lista();
+        ITree arbol=new Tree();
+        arbol.pushO("Mi-princesa"+obj.DesLista(),50);
+        /**  arbol.pushO("la calabaza"+obj.DesLista());
+        arbol.pushO("la nueva luz de mayo"+obj.DesLista());
+        arbol.pushO("la poblanita"+obj.DesLista());
+        arbol.pushO("Posada de reyes"+obj.DesLista());
+        arbol.pushO("el divino niño"+obj.DesLista());
+        //arbol.pushO(obj.DesLista());
+        // arbol.pushO("la nueva luz de mayo"+obj.DesLista());
+        arbol.pushO(obj.DesLista());
+         */
+        do{
+            System.out.println("Menu Del arbol");
+            System.out.println("1.-Colocar hotel");
+            System.out.println("2.-ver en preorden");
+            System.out.println("3.-ver en posorden");
+            System.out.println("4.-ver en inorden");
+            System.out.println("5.-altura del arbol");
+            System.out.println("6.-numero de nodos");
+            System.out.println("0.-salir");
+            op=sc.nextInt();
+            switch (op){
+                case 1:
+                    System.out.println("anota el nombre del hotel separado por un -");
+                    String name=sc.next();
+                    int n=(int)r.nextInt();
+                    arbol.pushO(name+obj.DesLista(),n);
+                    break;
+                case 2: arbol.auxPreOrder(); break;
+                case 3: arbol.auxPostOrder(); break;
+                case 4: arbol.auxInOrder(); break;
+                case 5: System.out.println(arbol.altura()); break;
+                case 6: System.out.println(arbol.NNodos()); break;
+                default: System.out.println("numero invalido"); break;
+            }
+
+        }while(op!=0);
+
+    }
+}
